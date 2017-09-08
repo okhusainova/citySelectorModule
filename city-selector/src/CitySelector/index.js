@@ -1,7 +1,6 @@
 'use strict';
 
 require('./style.less');
-const $ = require('jQuery');
 
 export default class CitySelector {
     constructor(obj) {
@@ -11,19 +10,20 @@ export default class CitySelector {
         this._saveUrl = obj.saveUrl;
 
         this.container.addEventListener('click', this.showElements());
-        // $(`#${obj.elementId}`).on('click', '#chooseRegion', this.getRegionsList.bind(this));
-        //https://blog.garstasio.com/you-dont-need-jquery/events/
+        this.container.addEventListener('click', this.getRegionsList());
     }
 
 
     showElements() {
+        console.log('showElements');
         let chooseRegion = document.createElement('button');
 
         chooseRegion.innerHTML = 'Выбрать регион';
         chooseRegion.setAttribute('id', 'chooseRegion');
+        chooseRegion.setAttribute('class', 'js-choose-region');
 
         const createCitySelector = document.getElementById('createCitySelector'),
-              infoBlock = document.getElementById('info');
+            infoBlock = document.getElementById('info');
 
         createCitySelector.addEventListener('click', () => {
             infoBlock.style.display = 'block';
@@ -33,17 +33,39 @@ export default class CitySelector {
 
     getRegionsList() {
         const url = this._regionsUrl;
-            this._sendRequest(url);
+        console.log('getRegionsList');
+        document.body.addEventListener('click', (event) => {
+
+            var clickedEl = event.target;
+
+            if (clickedEl.className.indexOf('js-choose-region') === -1) {
+                return;
+            } else {
+                this._sendRequest(url);
+            }
+        });
     }
 
     _sendRequest(url) {
         var xhr = new XMLHttpRequest();
         xhr.open('GET', url, false);
         xhr.send();
-        if (xhr.status != 200) {
-            console.log( xhr.status + ': ' + xhr.statusText );
+        if (xhr.status !== 200) {
+            console.log(xhr.status + ': ' + xhr.statusText);
         } else {
-            console.log(xhr);
+            const parsed = JSON.parse(xhr.response);
+
+            let regionList = document.createElement('ul'),
+                listItem;
+
+            parsed.forEach((item) => {
+                listItem  = document.createElement('li');
+                listItem.className = 'js-regions-list-item';
+                listItem.innerText = item.title;
+                regionList.appendChild(listItem);
+            });
+
+            document.body.insertBefore(regionList, this.container);
         }
     }
 }
