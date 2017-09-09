@@ -10,7 +10,11 @@ export default class CitySelector {
         this._saveUrl = obj.saveUrl;
 
         this.container.addEventListener('click', this.showElements());
-        this.container.addEventListener('click', this.getRegionsList());
+        if (document.getElementById('chooseRegion') === null) {
+            this.container.addEventListener('click', this.getRegionsList());
+        }
+        this.container.addEventListener('click', this.getLocalitiesList());
+        this.container.addEventListener('click', this.saveLocation());
     }
 
 
@@ -27,7 +31,7 @@ export default class CitySelector {
 
         createCitySelector.addEventListener('click', () => {
             infoBlock.style.display = 'block';
-            document.body.insertBefore(chooseRegion, this.container);
+            this.container.appendChild(chooseRegion);
         });
     }
 
@@ -36,37 +40,151 @@ export default class CitySelector {
         console.log('getRegionsList');
         document.body.addEventListener('click', (event) => {
 
-            var clickedEl = event.target;
+            const clickedEl = event.target;
 
             if (clickedEl.className.indexOf('js-choose-region') === -1) {
                 return;
             } else {
-                this._sendRequest(url);
+                this._sendRequestRegions(url);
             }
         });
     }
 
-    _sendRequest(url) {
-        var xhr = new XMLHttpRequest();
+    getLocalitiesList() {
+        document.body.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            const _id = clickedEl.getAttribute('data-id');
+            const url = this._localitiesUrl + '/' + _id;
+
+            console.log(url);
+
+            if (clickedEl.className.indexOf('js-regions-list-item') === -1) {
+                return;
+            } else {
+                this._detectCLickedElement(clickedEl);
+                this._sendRequestLocalities(url, _id);
+            }
+        });
+    }
+
+    saveLocation() {
+        document.body.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            const url = this._saveUrl,
+                  _id =  clickedEl.getAttribute('data-id'),
+                  _name = clickedEl.innerText;
+
+            console.log('id', _id);
+            console.log('_name', _name);
+
+            if (clickedEl.className.indexOf('js-localities-list-item') === -1) {
+                return;
+            } else {
+                this._detectCLickedElement(clickedEl);
+                this._sendRequestForSave(url, _id, _name);
+            }
+        });
+    }
+
+    _detectCLickedElement(item) {
+        const clickedElement = document.querySelectorAll("._clicked");
+
+        [].forEach.call(clickedElement, function (el) {
+            el.classList.remove("_clicked");
+        });
+
+        item.className += ' ' + '_clicked';
+    }
+
+    _sendRequestRegions(url) {
+        const xhr = new XMLHttpRequest();
+
         xhr.open('GET', url, false);
         xhr.send();
         if (xhr.status !== 200) {
             console.log(xhr.status + ': ' + xhr.statusText);
         } else {
+            document.getElementById('chooseRegion').remove();
+            if (document.getElementById('localitiesList')) {
+                document.getElementById('localitiesList').remove();
+            }
+
             const parsed = JSON.parse(xhr.response);
 
             let regionList = document.createElement('ul'),
                 listItem;
 
+            console.log('regionList', regionList);
+            regionList.className = 'js-regions-list regions-list';
+            regionList.id = 'regionsList';
+
+
             parsed.forEach((item) => {
-                listItem  = document.createElement('li');
-                listItem.className = 'js-regions-list-item';
+                listItem = document.createElement('li');
+                listItem.className = 'js-regions-list-item regions-list__item';
                 listItem.innerText = item.title;
+                listItem.setAttribute('data-id', item.id);
                 regionList.appendChild(listItem);
             });
 
-            document.body.insertBefore(regionList, this.container);
+            this.container.appendChild(regionList);
         }
+    }
+
+    _sendRequestLocalities(url, id) {
+        const xhr = new XMLHttpRequest();
+
+        xhr.open('GET', url, false);
+        xhr.send();
+        if (xhr.status !== 200) {
+            console.log(xhr.status + ': ' + xhr.statusText);
+        } else {
+            if (document.getElementById('localitiesList')) {
+                document.getElementById('localitiesList').remove();
+            }
+
+            const parsed = JSON.parse(xhr.response);
+
+            console.log(parsed);
+
+            let localityList = document.createElement('ul'),
+                listItem;
+
+            localityList.className = 'js-localities-list localities-list';
+            localityList.id = 'localitiesList';
+
+            parsed.list.forEach((item) => {
+                listItem = document.createElement('li');
+                listItem.className = 'js-localities-list-item';
+                listItem.innerText = item;
+                listItem.setAttribute('data-id', id);
+                localityList.appendChild(listItem);
+                console.log('listItem', listItem);
+            });
+
+            this.container.appendChild(localityList);
+        }
+    }
+
+    _sendRequestForSave(url, regionId, name) {
+
+        var xhr = new XMLHttpRequest();
+
+        var json = JSON.stringify({
+            name: name,
+            region: regionId
+        });
+
+        xhr.open("POST", url, true);
+        xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+
+        xhr.onreadystatechange = function() {
+            if (this.readyState != 4) return;
+
+            alert( this.responseText );
+        }
+
+        xhr.send(json);
     }
 }
 
