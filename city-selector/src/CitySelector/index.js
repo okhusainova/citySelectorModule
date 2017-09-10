@@ -15,6 +15,7 @@ export default class CitySelector {
         }
         this.container.addEventListener('click', this.getLocalitiesList());
         this.container.addEventListener('click', this.saveLocation());
+        this.container.addEventListener('click', this.destroy());
     }
 
 
@@ -61,7 +62,10 @@ export default class CitySelector {
             if (clickedEl.className.indexOf('js-regions-list-item') === -1) {
                 return;
             } else {
-                this._detectCLickedElement(clickedEl);
+                if (document.getElementById('saveLocation')) {
+                    document.getElementById('saveLocation').disabled = true;
+                }
+                this.detectClickedElement(clickedEl);
                 this._sendRequestLocalities(url, _id);
             }
         });
@@ -69,8 +73,7 @@ export default class CitySelector {
 
     saveLocation() {
         document.body.addEventListener('click', (event) => {
-            const clickedEl = event.target;
-            const url = this._saveUrl,
+            const clickedEl = event.target,
                   _id =  clickedEl.getAttribute('data-id'),
                   _name = clickedEl.innerText;
 
@@ -80,13 +83,49 @@ export default class CitySelector {
             if (clickedEl.className.indexOf('js-localities-list-item') === -1) {
                 return;
             } else {
-                this._detectCLickedElement(clickedEl);
-                this._sendRequestForSave(url, _id, _name);
+                const saveBtn = document.createElement('button');
+
+                if (document.getElementById('saveLocation')) {
+                    document.getElementById('saveLocation').remove();
+                }
+
+                this.detectClickedElement(clickedEl);
+
+                saveBtn.className = 'js-save-location';
+                saveBtn.id = 'saveLocation';
+                saveBtn.innerText = 'Сохранить';
+                this.container.appendChild(saveBtn);
+                this.sendLocality(_id, _name);
             }
         });
     }
 
-    _detectCLickedElement(item) {
+    destroy() {
+        document.body.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+
+            if (clickedEl.id.indexOf('destroyCitySelector') === -1) {
+                return;
+            } else {
+                this.container.innerHTML = '';
+            }
+        })
+    }
+
+    sendLocality(id, name) {
+        document.body.addEventListener('click', (event) => {
+            const clickedEl = event.target,
+                  url = this._saveUrl;
+
+            if (clickedEl.className.indexOf('js-save-location') === -1) {
+                return;
+            } else {
+                this._sendRequestForSave(url, id, name);
+            }
+        })
+    }
+
+    detectClickedElement(item) {
         const clickedElement = document.querySelectorAll("._clicked");
 
         [].forEach.call(clickedElement, function (el) {
@@ -175,7 +214,7 @@ export default class CitySelector {
             region: regionId
         });
 
-        xhr.open("POST", url, true);
+        xhr.open("POST", url, false);
         xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
 
         xhr.onreadystatechange = function() {
