@@ -13,22 +13,26 @@ export default class CitySelector {
         if (document.getElementById('chooseRegion') === null) {
             this.container.addEventListener('click', this.getRegionsList());
         }
-        this.container.addEventListener('click', this.getLocalitiesList());
-        this.container.addEventListener('click', this.saveLocation());
-        this.container.addEventListener('click', this.destroy());
+        document.getElementById('destroyCitySelector').addEventListener('click', () => {
+            this.destroy()
+        });
     }
 
+    destroy() {
+        this.container.innerHTML = '';
+        document.getElementById('info').style.display = 'none';
+    }
 
     showElements() {
-        console.log('showElements');
+        const createCitySelector = document.getElementById('createCitySelector'),
+            infoBlock = document.getElementById('info');
+
         let chooseRegion = document.createElement('button');
 
         chooseRegion.innerHTML = 'Выбрать регион';
         chooseRegion.setAttribute('id', 'chooseRegion');
         chooseRegion.setAttribute('class', 'js-choose-region');
-
-        const createCitySelector = document.getElementById('createCitySelector'),
-            infoBlock = document.getElementById('info');
+        chooseRegion.setAttribute('data-action', 'chooseRegion');
 
         createCitySelector.addEventListener('click', () => {
             infoBlock.style.display = 'block';
@@ -37,92 +41,80 @@ export default class CitySelector {
     }
 
     getRegionsList() {
-        const url = this._regionsUrl;
-        console.log('getRegionsList');
-        document.body.addEventListener('click', (event) => {
-
-            const clickedEl = event.target;
-
-            if (clickedEl.className.indexOf('js-choose-region') === -1) {
-                return;
-            } else {
-                this._sendRequestRegions(url);
-            }
-        });
-    }
-
-    getLocalitiesList() {
-        document.body.addEventListener('click', (event) => {
-            const clickedEl = event.target;
-            const _id = clickedEl.getAttribute('data-id');
-            const url = this._localitiesUrl + '/' + _id;
-
-            console.log(url);
-
-            if (clickedEl.className.indexOf('js-regions-list-item') === -1) {
-                return;
-            } else {
-                if (document.getElementById('saveLocation')) {
-                    document.getElementById('saveLocation').disabled = true;
-                }
-                this.detectClickedElement(clickedEl);
-                this._sendRequestLocalities(url, _id);
-            }
-        });
+        this._delegation();
     }
 
     saveLocation() {
-        document.body.addEventListener('click', (event) => {
-            const clickedEl = event.target,
-                  _id =  clickedEl.getAttribute('data-id'),
-                  _name = clickedEl.innerText;
+        this._delegation();
+    }
 
-            console.log('id', _id);
-            console.log('_name', _name);
+    _delegation() {
+        this.chooseRegion = () => {
+            const url = this._regionsUrl;
 
-            if (clickedEl.className.indexOf('js-localities-list-item') === -1) {
-                return;
-            } else {
-                const saveBtn = document.createElement('button');
+            this._sendRequestRegions(url);
+        };
 
-                if (document.getElementById('saveLocation')) {
-                    document.getElementById('saveLocation').remove();
-                }
+        this.getLocalityList = (target) => {
+            const clickedEl = target,
+                _id = clickedEl.getAttribute('data-id'),
+                url = this._localitiesUrl + '/' + _id;
 
-                this.detectClickedElement(clickedEl);
+            document.getElementById('regionText').innerHTML = _id;
 
-                saveBtn.className = 'js-save-location';
-                saveBtn.id = 'saveLocation';
-                saveBtn.innerText = 'Сохранить';
-                this.container.appendChild(saveBtn);
-                this.sendLocality(_id, _name);
+            if (document.getElementById('saveLocation')) {
+                document.getElementById('saveLocation').disabled = true;
+            }
+
+            this.detectClickedElement(clickedEl);
+            this._sendRequestLocalities(url, _id);
+        };
+
+        this.chooseLocality = (target) => {
+            const clickedEl = target,
+                _id = clickedEl.getAttribute('data-id'),
+                _name = clickedEl.innerText;
+
+            let saveBtn = document.createElement('button');
+
+            document.getElementById('localityText').innerHTML = _name;
+
+            if (document.getElementById('saveLocation')) {
+                document.getElementById('saveLocation').remove();
+            }
+
+            this.detectClickedElement(clickedEl);
+
+            saveBtn.className = 'js-save-location';
+            saveBtn.id = 'saveLocation';
+            saveBtn.innerText = 'Сохранить';
+            saveBtn.setAttribute('data-action', 'sendLocality');
+            saveBtn.setAttribute('data-id', _id);
+            saveBtn.setAttribute('data-name', _name);
+            this.container.appendChild(saveBtn);
+
+            //не придумала другого способа передать в sendLocality аргументы _id и _name, кроме как записать их дата-атрибутами в кнопку...
+        };
+
+        this.sendLocality = (target) => {
+            const url = this._saveUrl,
+                  id = target.getAttribute('data-id'),
+                  name = target.getAttribute('data-name');
+
+            this._sendRequestForSave(url, id, name);
+
+        };
+
+        const self = this;
+
+        document.getElementById('citySelector').addEventListener('click', (e) => {
+            const target = e.target,
+                action = target.getAttribute('data-action');
+
+            if (action) {
+                self[action](target);
             }
         });
-    }
-
-    destroy() {
-        document.body.addEventListener('click', (event) => {
-            const clickedEl = event.target;
-
-            if (clickedEl.id.indexOf('destroyCitySelector') === -1) {
-                return;
-            } else {
-                this.container.innerHTML = '';
-            }
-        })
-    }
-
-    sendLocality(id, name) {
-        document.body.addEventListener('click', (event) => {
-            const clickedEl = event.target,
-                  url = this._saveUrl;
-
-            if (clickedEl.className.indexOf('js-save-location') === -1) {
-                return;
-            } else {
-                this._sendRequestForSave(url, id, name);
-            }
-        })
     }
 
     detectClickedElement(item) {
@@ -144,6 +136,7 @@ export default class CitySelector {
             console.log(xhr.status + ': ' + xhr.statusText);
         } else {
             document.getElementById('chooseRegion').remove();
+
             if (document.getElementById('localitiesList')) {
                 document.getElementById('localitiesList').remove();
             }
@@ -153,7 +146,6 @@ export default class CitySelector {
             let regionList = document.createElement('ul'),
                 listItem;
 
-            console.log('regionList', regionList);
             regionList.className = 'js-regions-list regions-list';
             regionList.id = 'regionsList';
 
@@ -163,6 +155,7 @@ export default class CitySelector {
                 listItem.className = 'js-regions-list-item regions-list__item';
                 listItem.innerText = item.title;
                 listItem.setAttribute('data-id', item.id);
+                listItem.setAttribute('data-action', 'getLocalityList');
                 regionList.appendChild(listItem);
             });
 
@@ -184,8 +177,6 @@ export default class CitySelector {
 
             const parsed = JSON.parse(xhr.response);
 
-            console.log(parsed);
-
             let localityList = document.createElement('ul'),
                 listItem;
 
@@ -197,8 +188,8 @@ export default class CitySelector {
                 listItem.className = 'js-localities-list-item';
                 listItem.innerText = item;
                 listItem.setAttribute('data-id', id);
+                listItem.setAttribute('data-action', 'chooseLocality');
                 localityList.appendChild(listItem);
-                console.log('listItem', listItem);
             });
 
             this.container.appendChild(localityList);
@@ -207,9 +198,9 @@ export default class CitySelector {
 
     _sendRequestForSave(url, regionId, name) {
 
-        var xhr = new XMLHttpRequest();
+        const xhr = new XMLHttpRequest();
 
-        var json = JSON.stringify({
+        let json = JSON.stringify({
             name: name,
             region: regionId
         });
@@ -217,15 +208,13 @@ export default class CitySelector {
         xhr.open("POST", url, false);
         xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
 
-        xhr.onreadystatechange = function() {
+        xhr.onreadystatechange = function () {
             if (this.readyState != 4) return;
 
-            alert( this.responseText );
+            alert(this.responseText);
         }
-
         xhr.send(json);
     }
 }
-
 
 //https://googlechrome.github.io/samples/classes-es6/

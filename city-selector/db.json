@@ -410,6 +410,183 @@
       "name": "Пятигорск",
       "region": "26",
       "id": "B1Qv0e7qb"
+    },
+    {
+      "name": "Староминская",
+      "region": "23",
+      "id": "H1MiYVNib"
+    },
+    {
+      "name": "Шахты",
+      "region": "61",
+      "id": "SkNsKNVsb"
+    },
+    {
+      "name": "Краснодар",
+      "region": "23",
+      "id": "BkOVer4i-"
+    },
+    {
+      "region": "Кропоткин",
+      "id": "SknGLH4j-"
+    },
+    {
+      "region": "Кропоткин",
+      "id": "r1JXIB4iW"
+    },
+    {
+      "region": "Кропоткин",
+      "id": "SJl78H4i-"
+    },
+    {
+      "region": "Ростов-на-Дону",
+      "id": "Hk1EIrNoW"
+    },
+    {
+      "region": "Ростов-на-Дону",
+      "id": "HkGV8HEj-"
+    },
+    {
+      "region": "Ростов-на-Дону",
+      "id": "ByH4UHEjZ"
+    },
+    {
+      "region": "Кропоткин",
+      "id": "H1w6LHVoW"
+    },
+    {
+      "region": "Кропоткин",
+      "id": "ry_6LH4jZ"
+    },
+    {
+      "region": "Кропоткин",
+      "id": "rJF6IHEib"
+    },
+    {
+      "id": "r1hpIS4jZ"
+    },
+    {
+      "id": "S1TaISVo-"
+    },
+    {
+      "id": "ByRpLB4jb"
+    },
+    {
+      "id": "HkZxDrVs-"
+    },
+    {
+      "id": "HJXxvSVo-"
+    },
+    {
+      "id": "BJ4lvH4sZ"
+    },
+    {
+      "id": "SyFKPSNib"
+    },
+    {
+      "id": "BJ9KDrEj-"
+    },
+    {
+      "id": "HkoKPH4iW"
+    },
+    {
+      "region": "Железноводск",
+      "id": "B1ZmOBNsW"
+    },
+    {
+      "region": "Железноводск",
+      "id": "SyQmuH4i-"
+    },
+    {
+      "region": "Железноводск",
+      "id": "SJVm_SVsW"
+    },
+    {
+      "id": "HJ0X_SVi-"
+    },
+    {
+      "id": "Hyy4OS4i-"
+    },
+    {
+      "id": "BygyVOrNi-"
+    },
+    {
+      "region": "Ростов-на-Дону",
+      "id": "BklIdBNjZ"
+    },
+    {
+      "region": "Ростов-на-Дону",
+      "id": "HkYIdSEs-"
+    },
+    {
+      "region": "Ростов-на-Дону",
+      "id": "r1cLdH4j-"
+    },
+    {
+      "id": "rk-D_rNoW"
+    },
+    {
+      "id": "ByGvdSVs-"
+    },
+    {
+      "id": "rkgfvuBEjW"
+    },
+    {
+      "region": "Краснодар",
+      "id": "B181FHNsb"
+    },
+    {
+      "id": "r1okKrVjb"
+    },
+    {
+      "region": "Краснодар",
+      "id": "H1fmYBNs-"
+    },
+    {
+      "id": "rJwPtHViZ"
+    },
+    {
+      "id": "HydijrEiZ"
+    },
+    {
+      "id": "BJfghHVs-"
+    },
+    {
+      "region": "Краснодар",
+      "id": "BJZm2S4s-"
+    },
+    {
+      "id": "S1VQ2r4iW"
+    },
+    {
+      "name": "Железноводск",
+      "region": "26",
+      "id": "BklChBEjZ"
+    },
+    {
+      "name": "Пятигорск",
+      "region": "26",
+      "id": "S1NR3HEo-"
+    },
+    {
+      "name": "Железноводск",
+      "region": "26",
+      "id": "BJ8ppSVoW"
+    },
+    {
+      "name": "Кисловодск",
+      "region": "26",
+      "id": "HytTaHVob"
+    },
+    {
+      "name": "Железноводск",
+      "region": "26",
+      "id": "SkggZ8NoZ"
+    },
+    {
+      "name": "Кисловодск",
+      "region": "26",
+      "id": "By7l-U4jb"
     }
   ]
 }
