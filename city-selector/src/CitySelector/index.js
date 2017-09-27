@@ -5,11 +5,12 @@ require('./style.less');
 export default class CitySelector {
     constructor(obj) {
         this.container = document.getElementById(obj.elementId);
+
         this._regionsUrl = obj.regionsUrl;
         this._localitiesUrl = obj.localitiesUrl;
         this._saveUrl = obj.saveUrl;
 
-        this.container.addEventListener('click', this.showElements());
+        document.getElementById('createCitySelector').addEventListener('click', this.showElements.bind(this));
         if (document.getElementById('chooseRegion') === null) {
             this.container.addEventListener('click', this.getRegionsList());
         }
@@ -24,20 +25,17 @@ export default class CitySelector {
     }
 
     showElements() {
-        const createCitySelector = document.getElementById('createCitySelector'),
-            infoBlock = document.getElementById('info');
-
         let chooseRegion = document.createElement('button');
+
+        document.getElementById('createCitySelector').disabled = true;
 
         chooseRegion.innerHTML = 'Выбрать регион';
         chooseRegion.setAttribute('id', 'chooseRegion');
         chooseRegion.setAttribute('class', 'js-choose-region');
         chooseRegion.setAttribute('data-action', 'chooseRegion');
 
-        createCitySelector.addEventListener('click', () => {
-            infoBlock.style.display = 'block';
-            this.container.appendChild(chooseRegion);
-        });
+        document.getElementById('info').style.display = 'block';
+        this.container.appendChild(chooseRegion);
     }
 
     getRegionsList() {
@@ -98,8 +96,8 @@ export default class CitySelector {
 
         this.sendLocality = (target) => {
             const url = this._saveUrl,
-                  id = target.getAttribute('data-id'),
-                  name = target.getAttribute('data-name');
+                id = target.getAttribute('data-id'),
+                name = target.getAttribute('data-name');
 
             this._sendRequestForSave(url, id, name);
 
